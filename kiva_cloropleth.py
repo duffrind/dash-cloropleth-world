@@ -50,10 +50,11 @@ data = [dict(
     marker={'line': {'width': 0.5}},  # width of country boundaries
     colorbar={'autotick': True,
               'tickprefix': '',  # could be useful if plotting $ values
-              'title': 'Mean funded amount<br>in USD'},  # colorbar title
+              'ticksuffix': '',  # possible examples: people, loans, etc.
+              'title': '# Loans<br>Scale cutoff: 30k'},  # colorbar title
 )]
 layout = dict(
-    title = 'Mean Kiva Microloan Size<br>Source:\
+    title = 'Total Individual Kiva Microloans Per Country<br>Source:\
             <a href="https://www.kaggle.com/kiva/data-science-for-good-kiva-crowdfunding"">\
             Kaggle</a>',
     geo ={'showframe': False}  # hide frame around map
