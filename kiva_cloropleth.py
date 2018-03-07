@@ -1,8 +1,14 @@
+'''
+Author: Richard Decal, adapted from Plotly documentation:
+https://plot.ly/python/choropleth-maps/#full-county-choropleths
+'''
+
 import plotly.plotly as py
 import plotly
 import pandas as pd
+from kiva_data_loaders import *
 
-df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+loans_data, mpi_location_data, loan_theme_ids_data, loan_themes_by_region_data = load_all()
 
 data = [ dict(
         type = 'choropleth',
@@ -37,6 +43,8 @@ layout = dict(
     )
 )
 
-fig = dict( data=data, layout=layout )
+fig = dict(data=data, layout=layout)
 
+# switch to offline plots
+# ref https://plot.ly/python/getting-started/#initialization-for-offline-plotting
 plotly.offline.plot(fig, validate=False, filename='d3-world-map.html')

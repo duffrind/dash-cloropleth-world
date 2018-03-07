@@ -1,3 +1,9 @@
+'''
+Author: Richard Decal
+
+Helper funcs for loading kiva csvs from the relative data/ dir
+'''
+
 import pandas as pd
 
 
