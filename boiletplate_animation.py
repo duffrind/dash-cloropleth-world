@@ -10,15 +10,13 @@ import pandas as pd
 init_notebook_mode(connected=True)
 
 url = 'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
-dataset = pd.read_csv(url)
+df = pd.read_csv(url)
 
 years = ['1952', '1962', '1967', '1972', '1977', '1982', '1987', '1992', '1997',
          '2002', '2007']
 # make list of continents
-continents = []
-for continent in dataset['continent']:
-    if continent not in continents:
-        continents.append(continent)
+continents = df['continent'].unique()
+
 # make figure
 figure = {
     'data': [],
@@ -93,7 +91,7 @@ sliders_dict = {
 # make data
 year = 1952
 for continent in continents:
-    dataset_by_year = dataset[dataset['year'] == year]
+    dataset_by_year = df[df['year'] == year]
     dataset_by_year_and_cont = dataset_by_year[
         dataset_by_year['continent'] == continent]
 
@@ -115,7 +113,7 @@ for continent in continents:
 for year in years:
     frame = {'data': [], 'name': str(year)}
     for continent in continents:
-        dataset_by_year = dataset[dataset['year'] == int(year)]
+        dataset_by_year = df[df['year'] == int(year)]
         dataset_by_year_and_cont = dataset_by_year[
             dataset_by_year['continent'] == continent]
 
