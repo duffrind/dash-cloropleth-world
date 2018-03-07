@@ -1,0 +1,3 @@
+Error: Plotly exception when running without a Plotly account.
+Solution: switch to plotly.offline.plot()
+
