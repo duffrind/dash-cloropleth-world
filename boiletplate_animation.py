@@ -12,8 +12,8 @@ init_notebook_mode(connected=True)
 url = 'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
 df = pd.read_csv(url)
 
-years = ['1952', '1962', '1967', '1972', '1977', '1982', '1987', '1992', '1997',
-         '2002', '2007']
+years = df['year'].unique()
+
 # make list of continents
 continents = df['continent'].unique()
 
