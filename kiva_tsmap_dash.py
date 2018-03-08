@@ -12,7 +12,7 @@ df = pd.read_csv("data/kiva_loans.csv")
 # converting dates from string to DateTime objects gives nice tools
 df['date'] = pd.to_datetime(df['date'])
 # for example, we can turn the full date into just a year
-df['year'] = df.date.dt.to_period("Y")
+df['year'] = df.date.dt.year
 # then convert it to integers so you can do list comprehensions later
 # astype(int) expects a strings, so we need to go Period -> str -> int
 # we want ints so we can find the min, max, etc later
