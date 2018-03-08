@@ -65,30 +65,6 @@ def update_figure(selected_year):
     # countries_funded_amount[countries_funded_amount['year'] == selected_year]
     one_year_data = countries_funded_amount.loc[selected_year]
 
-    # The go.Scatter graph object go.Scatter contains information
-    # about points to put on a scatter plot. Here, we create one
-    # Scatter object for each continent by filtering, and append each
-    # Scatter object to a list. The whole list of Scatterplots will
-    # appear on one graph--'graph-with-slider'
-    traces = []
-    # for i in filtered_df.continent.unique():
-    #     df_by_continent = filtered_df[filtered_df['continent'] == i]
-    #     """The mode controls the appearance of the points of data. Try changing
-    #     mode below to 'lines' and see the change. A complete list of modes is
-    #     available at https://plot.ly/python/reference/#scatter"""
-    #     traces.append(go.Scatter(  # Scatter is just one plotly.graph_obj (.go)
-    #         x=df_by_continent['gdpPercap'],   # graph type. Try changing
-    #         y=df_by_continent['lifeExp'],     # to go.Scatter3d.
-    #         text=df_by_continent['country'],  # (It won't look great, here.)
-    #         mode='markers',
-    #         opacity=0.7,
-    #         marker={
-    #             'size': 15,
-    #             'line': {'width': 0.5, 'color': 'white'}
-    #         },
-    #         name=i
-    #     ))
-
     logzMin = np.log(one_year_data.values.min())
     logzMax = np.log(one_year_data.values.max())
     log_ticks = np.linspace(logzMin, logzMax, 8)
@@ -131,17 +107,6 @@ def update_figure(selected_year):
     )
     fig = {'data': data, 'layout': layout}
     return fig
-
-    # return {
-    #     'data': traces,
-    #     'layout': go.Layout(
-    #         xaxis={'type': 'log', 'title': 'GDP Per Capita'},
-    #         yaxis={'title': 'Life Expectancy', 'range': [20, 90]},
-    #         margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
-    #         legend={'x': 0, 'y': 1},
-    #         hovermode='closest'  # Try commenting out this line and seeing what
-    #     )                        # changes.
-    # }
 
 
 if __name__ == '__main__':
