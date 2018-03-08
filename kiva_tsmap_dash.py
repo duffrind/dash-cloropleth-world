@@ -2,6 +2,7 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
+from dash.dependencies import Input, Output
 #from kiva_data_loaders import *
 
 # Import your dataframe from a csv with pandas
@@ -33,7 +34,6 @@ app = dash.Dash()
 app.layout = html.Div([
     dcc.Graph(id='graph-with-slider'),
     html.Div([  # div inside div for style
-        html.P(id='slider-label'),
         dcc.Slider(
             id='year-slider',
             min=df['year'].min(),
@@ -44,15 +44,15 @@ app.layout = html.Div([
             marks={str(year): year for year in df['year'].unique()},
         )
         ],
-        style={'marginLeft':20, 'marginRight':20})
+        style={'marginLeft':40, 'marginRight':40})
 ])
 
 
 # Notice the Input and Outputs in this wrapper correspond to
 # the ids of the components in app.layout above.
 @app.callback(
-    dash.dependencies.Output('graph-with-slider', 'figure'),
-    [dash.dependencies.Input('year-slider', 'value')])
+    Output('graph-with-slider', 'figure'),
+    [Input('year-slider', 'value')])
 def update_figure(selected_year):
     """Define how the graph is to be updated based on the slider."""
 
@@ -111,7 +111,7 @@ def update_figure(selected_year):
                   'title': '# of loans'},  # colorbar title
     )]
     layout = dict(
-        title='Total Loans Per Country. Year:{}<br>Source:\
+        title='Total Loans Per Country. Year: {}<br>Source:\
                 <a href="https://www.kaggle.com/kiva/data-science-for-good-kiva-crowdfunding"">\
                 Kaggle</a>'.format(selected_year),
         font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'),
