@@ -64,7 +64,7 @@ def update_figure(selected_year):
     # countries_funded_amount[countries_funded_amount['year'] == selected_year]
     one_year_data = countries_funded_amount.loc[
                 countries_funded_amount.index.get_level_values('year') == selected_year]
-f
+
     # The go.Scatter graph object go.Scatter contains information
     # about points to put on a scatter plot. Here, we create one
     # Scatter object for each continent by filtering, and append each
