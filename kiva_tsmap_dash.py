@@ -3,6 +3,7 @@ import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
 from dash.dependencies import Input, Output
+import numpy as np
 #from kiva_data_loaders import *
 
 # Import your dataframe from a csv with pandas
@@ -87,28 +88,39 @@ def update_figure(selected_year):
     #         },
     #         name=i
     #     ))
+
+    logzMin = np.log(one_year_data.values.min())
+    logzMax = np.log(one_year_data.values.max())
+    log_ticks = np.linspace(logzMin, logzMax, 8)
+    exp_labels = np.exp(log_ticks).astype(np.int, copy=False)
     data = [dict(
         type='choropleth',
         locations=one_year_data.index.get_level_values('country'),  # list of country names
         # other option is USA-states
         locationmode='country names',
-        # sets the color values
-        z=one_year_data.values,  # ...and their associated values
+        # sets the color values. using log scale so that extreme values don't
+        # drown out the rest of the data
+        z=np.log(one_year_data.values),  # ...and their associated values
         # sets the text element associated w each position
-        # text=countries_funded_amount.index,
+        text=one_year_data.values,
+        hoverinfo='location+text',  # hide the log-transformed data values
         # other colorscales are available here:
         # https://plot.ly/ipython-notebooks/color-scales/
         colorscale='Greens',
         # by default, low numbers are dark and high numbers are white
         reversescale=True,
         # set upper bound of color domain (see also zmin)
+        zmin=200,
         #zmax=30000,
         # if you want to use zmin or zmax don't forget to disable zauto
         #zauto=False,
         marker={'line': {'width': 0.5}},  # width of country boundaries
         colorbar={'autotick': True,
                   'tickprefix': '',  # could be useful if plotting $ values
-                  'title': '# of loans'},  # colorbar title
+                  'title': '# of loans',  # colorbar title
+                  'tickvals': log_ticks,
+                  'ticktext': exp_labels  # transform log tick labels back to standard scale
+                  },
     )]
     layout = dict(
         title='Total Loans Per Country. Year: {}<br>Source:\
