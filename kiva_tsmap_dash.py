@@ -110,7 +110,7 @@ def update_figure(selected_year):
         # by default, low numbers are dark and high numbers are white
         reversescale=True,
         # set upper bound of color domain (see also zmin)
-        zmin=200,
+        #zmin=200,
         #zmax=30000,
         # if you want to use zmin or zmax don't forget to disable zauto
         #zauto=False,
