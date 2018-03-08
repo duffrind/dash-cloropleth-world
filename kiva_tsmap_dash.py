@@ -22,7 +22,9 @@ df['year'] = df.date.dt.to_period("Y")
 df['year'] = df.year.astype(str).astype(int)
 
 # This is our features of interest
-countries_funded_amount = df.groupby(['country', 'year']).size()
+# I grouped by year first so that I can then filter by year with just
+# df.loc[2014]
+countries_funded_amount = df.groupby(['year', 'country']).size()
 
 # Create a Dash object instance
 app = dash.Dash()
@@ -62,8 +64,7 @@ def update_figure(selected_year):
     # snag: using .groupby() with more than one feature caused the datatype
     # to be Pandas.Series instead of Pandas.DataFrame. So, we couldn't just do
     # countries_funded_amount[countries_funded_amount['year'] == selected_year]
-    one_year_data = countries_funded_amount.loc[
-                countries_funded_amount.index.get_level_values('year') == selected_year]
+    one_year_data = countries_funded_amount.loc[selected_year]
 
     # The go.Scatter graph object go.Scatter contains information
     # about points to put on a scatter plot. Here, we create one
@@ -90,11 +91,11 @@ def update_figure(selected_year):
     #     ))
     data = [dict(
         type='choropleth',
-        locations=one_year_data.index.get_level_values('year'),  # list of country names
+        locations=one_year_data.index.get_level_values('country'),  # list of country names
         # other option is USA-states
         locationmode='country names',
         # sets the color values
-        z=one_year_data.values,  # ...and their associated value means
+        z=one_year_data.values,  # ...and their associated values
         # sets the text element associated w each position
         # text=countries_funded_amount.index,
         # other colorscales are available here:
@@ -103,9 +104,9 @@ def update_figure(selected_year):
         # by default, low numbers are dark and high numbers are white
         reversescale=True,
         # set upper bound of color domain (see also zmin)
-        zmax=30000,
+        #zmax=30000,
         # if you want to use zmin or zmax don't forget to disable zauto
-        zauto=False,
+        #zauto=False,
         marker={'line': {'width': 0.5}},  # width of country boundaries
         colorbar={'autotick': True,
                   'tickprefix': '',  # could be useful if plotting $ values
