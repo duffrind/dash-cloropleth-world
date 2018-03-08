@@ -2,18 +2,13 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
-import plotly.graph_objs as go
 #from kiva_data_loaders import *
 
 # Import your dataframe from a csv with pandas
-
-
-# use data load helper I made in kiva_data_loaders.py
 df = pd.read_csv("data/kiva_loans.csv")
 
 # converting dates from string to DateTime objects gives nice tools
 df['date'] = pd.to_datetime(df['date'])
-
 # for example, we can turn the full date into just a year
 df['year'] = df.date.dt.to_period("Y")
 # then convert it to integers so you can do list comprehensions later
@@ -37,16 +32,19 @@ app = dash.Dash()
 # here so we can reference it inside update_figure
 app.layout = html.Div([
     dcc.Graph(id='graph-with-slider'),
-    # TODO select col
-    dcc.Slider(
-        id='year-slider',
-        min=df['year'].min(),
-        max=df['year'].max(),
-        value=df['year'].min(),  # The default value of the slider
-        step=None,
-        # the values have to be the same dtype for filtering to work later
-        marks={str(year): year for year in df['year'].unique()}
-    )
+    html.Div([  # div inside div for style
+        html.P(id='slider-label'),
+        dcc.Slider(
+            id='year-slider',
+            min=df['year'].min(),
+            max=df['year'].max(),
+            value=df['year'].min(),  # The default value of the slider
+            step=None,
+            # the values have to be the same dtype for filtering to work later
+            marks={str(year): year for year in df['year'].unique()},
+        )
+        ],
+        style={'marginLeft':20, 'marginRight':20})
 ])
 
 
@@ -110,12 +108,13 @@ def update_figure(selected_year):
         marker={'line': {'width': 0.5}},  # width of country boundaries
         colorbar={'autotick': True,
                   'tickprefix': '',  # could be useful if plotting $ values
-                  'title': 'Mean funded amount<br>in USD'},  # colorbar title
+                  'title': '# of loans'},  # colorbar title
     )]
     layout = dict(
-        title='Mean Kiva Microloan Size<br>Source:\
+        title='Total Loans Per Country. Year:{}<br>Source:\
                 <a href="https://www.kaggle.com/kiva/data-science-for-good-kiva-crowdfunding"">\
-                Kaggle</a>',
+                Kaggle</a>'.format(selected_year),
+        font=dict(family='Courier New, monospace', size=18, color='#7f7f7f'),
         geo={'showframe': False}  # hide frame around map
     )
     fig = {'data': data, 'layout': layout}
