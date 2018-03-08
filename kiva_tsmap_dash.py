@@ -1,18 +1,28 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.graph_objs as go
 import pandas as pd
-from kiva_data_loaders import *
+import plotly.graph_objs as go
+#from kiva_data_loaders import *
 
 # Import your dataframe from a csv with pandas
 
 
 # use data load helper I made in kiva_data_loaders.py
-df = load_loan_data()
+df = pd.read_csv("data/kiva_loans.csv")
+
+# converting dates from string to DateTime objects gives nice tools
 df['date'] = pd.to_datetime(df['date'])
+
+# for example, we can turn the full date into just a year
 df['year'] = df.date.dt.to_period("Y")
-countries_funded_amount = df.groupby('country').size()
+# then convert it to integers so you can do list comprehensions later
+# astype(int) expects a strings, so we need to go Period -> str -> int
+# we want ints so we can find the min, max, etc later
+df['year'] = df.year.astype(str).astype(int)
+
+# This is our features of interest
+countries_funded_amount = df.groupby(['country', 'year']).size()
 
 # Create a Dash object instance
 app = dash.Dash()
@@ -30,9 +40,10 @@ app.layout = html.Div([
         id='year-slider',
         min=df['year'].min(),
         max=df['year'].max(),
-        value=df['year'].min(),  # The default value of the slider.
+        value=df['year'].min(),  # The default value of the slider
         step=None,
-        marks={str(year): str(year) for year in df['year'].unique()}
+        # the values have to be the same dtype for filtering to work later
+        marks={str(year): year for year in df['year'].unique()}
     )
 ])
 
@@ -47,7 +58,12 @@ def update_figure(selected_year):
 
     # Depending on the year selected on the slider, filter the db
     # by that year.
-    filtered_df = countries_funded_amount[countries_funded_amount.year == selected_year]
+
+    # snag: using .groupby() with more than one feature caused the datatype
+    # to be Pandas.Series instead of Pandas.DataFrame. So, we couldn't just do
+    # countries_funded_amount[countries_funded_amount['year'] == selected_year]
+    one_year_data = countries_funded_amount.loc[
+                countries_funded_amount.index.get_level_values('year') == selected_year]
 
     # The go.Scatter graph object go.Scatter contains information
     # about points to put on a scatter plot. Here, we create one
@@ -74,11 +90,11 @@ def update_figure(selected_year):
     #     ))
     data = [dict(
         type='choropleth',
-        locations=filtered_df.index,  # list of country names
+        locations=one_year_data.index,  # list of country names
         # other option is USA-states
         locationmode='country names',
         # sets the color values
-        z=filtered_df.values,  # ...and their associated value means
+        z=one_year_data.values,  # ...and their associated value means
         # sets the text element associated w each position
         # text=countries_funded_amount.index,
         # other colorscales are available here:
