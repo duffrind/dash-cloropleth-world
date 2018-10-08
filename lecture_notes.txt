@@ -1,3 +1,22 @@
-Error: Plotly exception when running without a Plotly account.
-Solution: switch to plotly.offline.plot()
+Look at Pandas: 20 minutes to pandas.
 
+Group operations:
+https://chrisalbon.com/python/data_wrangling/pandas_apply_operations_to_groups/
+
+
+Intro to Animations:
+https://plot.ly/python/animations/
+
+Statistics plots:
+https://plot.ly/python/#statistics
+
+For customization:
+
+Complete figure reference:
+https://plot.ly/python/reference/
+
+# All style options
+https://plot.ly/python/#style-options
+
+Plot margins:
+https://plot.ly/python/setting-graph-size/

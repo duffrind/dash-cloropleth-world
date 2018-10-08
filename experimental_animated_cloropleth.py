@@ -2,21 +2,50 @@
 This is a boilerplate animated plot with sliders
 Modified from: https://plot.ly/python/animations/#using-a-slider-and-buttons
 '''
-from plotly.offline import init_notebook_mode
 import plotly
-
+import dash
+import dash_core_components as dcc
+import dash_html_components as html
+import plotly.graph_objs as go
 import pandas as pd
 
-init_notebook_mode(connected=True)
-
+### dash
 url = 'https://raw.githubusercontent.com/plotly/datasets/master/gapminderDataFiveYear.csv'
-df = pd.read_csv(url)
+dataset = pd.read_csv(url)
 
-years = df['year'].unique()
+# Create a Dash object instance
+app = dash.Dash()
 
+# The layout attribute of the Dash object, app
+# is where you include the elements you want to appear in the
+# dashboard. Here, dcc.Graph and dcc.Slider are separate
+# graph objects. Most of Graph's features are defined
+# inside the function update_figure, but we set the id
+# here so we can reference it inside update_figure
+app.layout = html.Div([
+    dcc.Graph(id='graph-with-slider'),
+    dcc.Slider(
+        id='year-slider',
+        min=dataset['year'].min(),
+        max=dataset['year'].max(),
+        value=dataset['year'].min(),  # The default value of the slider.
+        step=None,
+        marks={str(year): str(year) for year in dataset['year'].unique()}
+    ),
+    html.Button('Play', id='button')
+])
+
+### end DASH
+
+
+## begin figure
+years = ['1952', '1962', '1967', '1972', '1977', '1982', '1987', '1992', '1997',
+         '2002', '2007']
 # make list of continents
-continents = df['continent'].unique()
-
+continents = []
+for continent in dataset['continent']:
+    if continent not in continents:
+        continents.append(continent)
 # make figure
 figure = {
     'data': [],
@@ -91,7 +120,7 @@ sliders_dict = {
 # make data
 year = 1952
 for continent in continents:
-    dataset_by_year = df[df['year'] == year]
+    dataset_by_year = dataset[dataset['year'] == year]
     dataset_by_year_and_cont = dataset_by_year[
         dataset_by_year['continent'] == continent]
 
@@ -113,7 +142,7 @@ for continent in continents:
 for year in years:
     frame = {'data': [], 'name': str(year)}
     for continent in continents:
-        dataset_by_year = df[df['year'] == int(year)]
+        dataset_by_year = dataset[dataset['year'] == int(year)]
         dataset_by_year_and_cont = dataset_by_year[
             dataset_by_year['continent'] == continent]
 
@@ -145,3 +174,62 @@ for year in years:
 figure['layout']['sliders'] = [sliders_dict]
 
 plotly.offline.plot(figure, filename='animated.html')
+
+## ^^^ animated plot
+
+#
+#
+# ### resume dash
+#
+#
+#
+# # Notice the Input and Outputs in this wrapper correspond to
+# # the ids of the components in app.layout above.
+# @app.callback(
+#     dash.dependencies.Output('graph-with-slider', 'figure'),
+#     [dash.dependencies.Input('year-slider', 'value')])
+# def update_figure(selected_year):
+#     """Define how the graph is to be updated based on the slider."""
+#
+#     # Depending on the year selected on the slider, filter the db
+#     # by that year.
+#     filtered_df = df[df.year == selected_year]
+#
+#     # The go.Scatter graph object go.Scatter contains information
+#     # about points to put on a scatter plot. Here, we create one
+#     # Scatter object for each continent by filtering, and append each
+#     # Scatter object to a list. The whole list of Scatterplots will
+#     # appear on one graph--'graph-with-slider'
+#     traces = []
+#     for i in filtered_df.continent.unique():
+#         df_by_continent = filtered_df[filtered_df['continent'] == i]
+#         """The mode controls the appearance of the points of data. Try changing
+#         mode below to 'lines' and see the change. A complete list of modes is
+#         available at https://plot.ly/python/reference/#scatter"""
+#         traces.append(go.Scatter(  # Scatter is just one plotly.graph_obj (.go)
+#             x=df_by_continent['gdpPercap'],   # graph type. Try changing
+#             y=df_by_continent['lifeExp'],     # to go.Scatter3d.
+#             text=df_by_continent['country'],  # (It won't look great, here.)
+#             mode='markers',
+#             opacity=0.7,
+#             marker={
+#                 'size': 15,
+#                 'line': {'width': 0.5, 'color': 'white'}
+#             },
+#             name=i
+#         ))
+#
+#     return {
+#         'data': traces,
+#         'layout': go.Layout(
+#             xaxis={'type': 'log', 'title': 'GDP Per Capita'},
+#             yaxis={'title': 'Life Expectancy', 'range': [20, 90]},
+#             margin={'l': 40, 'b': 40, 't': 10, 'r': 10},
+#             legend={'x': 0, 'y': 1},
+#             hovermode='closest'  # Try commenting out this line and seeing what
+#         )                        # changes.
+#     }
+#
+#
+# if __name__ == '__main__':
+#     app.run_server()
